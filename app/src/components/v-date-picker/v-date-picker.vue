@@ -132,30 +132,38 @@ watch(
 			return;
 		}
 
-		// Parse based on type
-		switch (props.type) {
-			case 'date':
-				calendarValue.value = parseDate(newValue);
-				break;
-			case 'time':
-				internalTimeValue.value = parseTime(newValue);
-				break;
+		try {
+			// Parse based on type
+			switch (props.type) {
+				case 'date':
+					calendarValue.value = parseDate(newValue);
+					break;
+				case 'time':
+					internalTimeValue.value = parseTime(newValue);
+					break;
 
-			case 'dateTime': {
-				// Matches legacy Flatpickr format: "yyyy-MM-dd'T'HH:mm:ss"
-				const dt = parseDateTime(newValue);
-				calendarValue.value = new CalendarDate(dt.year, dt.month, dt.day);
-				internalTimeValue.value = new Time(dt.hour, dt.minute, dt.second);
-				break;
-			}
+				case 'dateTime': {
+					// Matches legacy Flatpickr format: "yyyy-MM-dd'T'HH:mm:ss"
+					const dt = parseDateTime(newValue);
+					calendarValue.value = new CalendarDate(dt.year, dt.month, dt.day);
+					internalTimeValue.value = new Time(dt.hour, dt.minute, dt.second);
+					break;
+				}
 
-			case 'timestamp': {
-				// Matches legacy Flatpickr format: Date.toISOString() (absolute timestamp)
-				const dt = parseAbsoluteToLocal(newValue);
-				calendarValue.value = new CalendarDate(dt.year, dt.month, dt.day);
-				internalTimeValue.value = new Time(dt.hour, dt.minute, dt.second);
-				break;
+				case 'timestamp': {
+					// Matches legacy Flatpickr format: Date.toISOString() (absolute timestamp)
+					const dt = parseAbsoluteToLocal(newValue);
+					calendarValue.value = new CalendarDate(dt.year, dt.month, dt.day);
+					internalTimeValue.value = new Time(dt.hour, dt.minute, dt.second);
+					break;
+				}
 			}
+		} catch (error) {
+			console.warn('Failed to parse modelValue for v-date-picker:', error);
+
+			// Reset to defaults on parse error to avoid inconsistent state
+			calendarValue.value = undefined;
+			internalTimeValue.value = hasTime.value ? getDefaultTimeValue() : undefined;
 		}
 	},
 	{ immediate: true },

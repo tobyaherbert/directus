@@ -1152,5 +1152,21 @@ describe('v-date-picker', () => {
 			expect(callCount).toBeGreaterThan(0);
 			expect(wrapper.emitted('update:modelValue')).toBeTruthy();
 		});
+
+		it('handles database expressions without throwing errors', () => {
+			expect(() => {
+				createWrapper({
+					type: 'timestamp',
+					modelValue: 'CURRENT_TIMESTAMP',
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				createWrapper({
+					type: 'timestamp',
+					modelValue: 'now()',
+				});
+			}).not.toThrow();
+		});
 	});
 });
